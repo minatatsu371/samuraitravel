@@ -78,5 +78,5 @@ public class UserService {
         User currentUser = userRepository.getReferenceById(userEditForm.getId());
         return !userEditForm.getEmail().equals(currentUser.getEmail());      
     }
-    }   
+}   
     

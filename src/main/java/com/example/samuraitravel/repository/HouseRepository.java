@@ -7,8 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.samuraitravel.entity.House;
- 
- public interface HouseRepository extends JpaRepository<House, Integer> {
+ public interface HouseRepository extends JpaRepository<House, Integer>{
 	 public Page<House> findByNameLike(String keyword, Pageable pageable);
 
 	    public Page<House> findByNameLikeOrAddressLikeOrderByCreatedAtDesc(String nameKeyword, String addressKeyword, Pageable pageable);  

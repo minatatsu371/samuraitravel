@@ -32,9 +32,11 @@ public class SignupEventListener {
          String message = "以下のリンクをクリックして会員登録を完了してください。";
          
          SimpleMailMessage mailMessage = new SimpleMailMessage(); 
-         mailMessage.setTo(recipientAddress);
+ 		mailMessage.setFrom("tatsuki1164@gmail.com"); // 送信者アドレスを明示的に設定
+ 		mailMessage.setTo(recipientAddress);
          mailMessage.setSubject(subject);
          mailMessage.setText(message + "\n" + confirmationUrl);
+         mailMessage.setText(confirmationUrl);
          javaMailSender.send(mailMessage);
      }
 }
