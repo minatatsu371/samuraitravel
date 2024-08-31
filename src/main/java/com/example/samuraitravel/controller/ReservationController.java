@@ -26,18 +26,25 @@ import com.example.samuraitravel.repository.HouseRepository;
 import com.example.samuraitravel.repository.ReservationRepository;
 import com.example.samuraitravel.security.UserDetailsImpl;
 import com.example.samuraitravel.service.ReservationService;
+import com.example.samuraitravel.service.StripeService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 
 
 @Controller
 public class ReservationController {
  private final ReservationRepository reservationRepository;  
  private final HouseRepository houseRepository;
- private final ReservationService reservationService; 
+ private final ReservationService reservationService;
+ private final StripeService stripeService; 
      
- public ReservationController(ReservationRepository reservationRepository, HouseRepository houseRepository, ReservationService reservationService) {   
-         this.reservationRepository = reservationRepository;     
+  public ReservationController(ReservationRepository reservationRepository, HouseRepository houseRepository, ReservationService reservationService, StripeService stripeService) { 
+        this.reservationRepository = reservationRepository;     
          this.houseRepository = houseRepository;
          this.reservationService = reservationService;
+         this.stripeService = stripeService;
+         
      }    
  
      @GetMapping("/reservations")
@@ -83,6 +90,7 @@ public class ReservationController {
      public String confirm(@PathVariable(name = "id") Integer id,
                            @ModelAttribute ReservationInputForm reservationInputForm,
                            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,                          
+                           HttpServletRequest httpServletRequest,
                            Model model) 
      {        
          House house = houseRepository.getReferenceById(id);
@@ -98,9 +106,21 @@ public class ReservationController {
          
          ReservationRegisterForm reservationRegisterForm = new ReservationRegisterForm(house.getId(), user.getId(), checkinDate.toString(), checkoutDate.toString(), reservationInputForm.getNumberOfPeople(), amount);
          
+         String sessionId = stripeService.createStripeSession(house.getName(), reservationRegisterForm, httpServletRequest);
+         
          model.addAttribute("house", house);  
          model.addAttribute("reservationRegisterForm", reservationRegisterForm);       
+         model.addAttribute("sessionId", sessionId);
          
          return "reservations/confirm";
-     }    
+     }   
+     
+     /*    
+     @PostMapping("/houses/{id}/reservations/create")
+     public String create(@ModelAttribute ReservationRegisterForm reservationRegisterForm) {                
+         reservationService.create(reservationRegisterForm);        
+         
+         return "redirect:/reservations?reserved";
+     }
+      */
 }
